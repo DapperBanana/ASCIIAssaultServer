@@ -4,9 +4,15 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using Microsoft.Extensions.Configuration;
+
 
 class Server
 {
+    IConfiguration config = new ConfigurationBuilder()
+        .AddJsonFile("config.json", optional: true, reloadOnChange: true)
+        .Build();
+
     private TcpListener? tcpListener;
     private List<ClientHandler> clients = new List<ClientHandler>();
 
@@ -14,6 +20,8 @@ class Server
     {
         tcpListener = new TcpListener(IPAddress.Any, 6969);
         tcpListener.Start();
+
+        string connectionString = config.GetConnectionString("MyDatabase");
 
         Console.WriteLine("Server started. Waiting for connections...");
 
